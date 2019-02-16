@@ -69,9 +69,24 @@ class BasicAdmin extends Controller
         // POST请求, 数据自动存库
         $data = array_merge($this->request->post(), $extendData);
         if (false !== $this->_callback('_form_filter', $data, [])) {
+            if (isset($data['credit'])) {
+                $data['h_money'] = sprintf("%.2f", $data['h_credit']) * sysconf('discount');
+                $data['cr_id'] = "c_" . (string)time();
+                $user=Db::name("SystemUser")->field("id,principal")->find($data['uid']);
+                if ($user['principal'] < $data['h_money']) {
+                    $this->error('本金不足，请先充值本金');
+                }
+
+            }
+
             $result = DataService::save($db, $data, $pk, $where);
             if (false !== $this->_callback('_form_result', $result, $data)) {
                 if ($result !== false) {
+                    if (isset($data['credit'])) {
+                        Db::name('SystemUser')->where(['id' => $data['uid']])->update([
+                            'principal' => Db::raw('principal-' . $data['h_money']),
+                        ]);
+                    }
                     $this->success('恭喜, 数据保存成功!', '');
                 }
                 $this->error('数据保存失败, 请稍候再试!');

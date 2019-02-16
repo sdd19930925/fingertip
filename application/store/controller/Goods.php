@@ -296,9 +296,9 @@ class Goods extends BasicAdmin
     public function resume()
     {
         if (DataService::update($this->table)) {
-            $this->success("商品上架成功！", '');
+            $this->success("申诉处理成功！", '');
         }
-        $this->error("商品上架失败，请稍候再试！");
+        $this->error("申诉处理失败，请稍候再试！");
     }
 
 }

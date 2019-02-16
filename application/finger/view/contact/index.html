@@ -1,0 +1,124 @@
+{extend name='admin@public/content'}
+
+{block name="button"}
+
+
+<!--{if auth("$classuri/del")}-->
+<button class='layui-btn layui-btn-sm layui-btn-primary' data-action='{:url("$classuri/del")}' data-field='delete'
+        data-update>批量删除
+</button>
+<!--{/if}-->
+
+{/block}
+
+{block name="content"}
+
+<!-- 表单搜索 开始 -->
+<form autocomplete="off" class="layui-form layui-form-pane form-search" action="{:request()->url()}"
+      onsubmit="return false" method="get">
+
+    <div class="layui-form-item layui-inline">
+        <label class="layui-form-label">商户</label>
+        <div class="layui-input-inline">
+            <input name="username" value="{$Think.get.username}" placeholder="请输入商户" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item layui-inline">
+        <label class="layui-form-label">手机</label>
+        <div class="layui-input-inline">
+            <input name="phone" value="{$Think.get.phone}" placeholder="请输入手机" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item layui-inline">
+        <label class="layui-form-label">qq</label>
+        <div class="layui-input-inline">
+            <input name="qq" value="{$Think.get.qq}" placeholder="请输入qq" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item layui-inline">
+        <label class="layui-form-label">发布时间</label>
+        <div class="layui-input-inline">
+            <input name="create_at" id="create_at" value="{$Think.get.create_at}" placeholder="请选择发布时间"
+                   class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item layui-inline">
+        <button class="layui-btn layui-btn-primary"><i class="layui-icon">&#xe615;</i> 搜 索</button>
+    </div>
+
+</form>
+<!-- 表单搜索 结束 -->
+
+<form onsubmit="return false;" data-auto="true" method="post">
+    <!--{if empty($list)}-->
+    <p class="help-block text-center well">没 有 记 录 哦！</p>
+    <!--{else}-->
+    <input type="hidden" value="resort" name="action">
+    <table class="layui-table notevent" lay-skin="line">
+        <thead>
+        <tr>
+            <th class='list-table-sort-td'>
+                <button type="submit" class="layui-btn layui-btn-normal layui-btn-xs">排 序</button>
+            </th>
+            <th class="nowrap">姓名</th>
+            <th class="nowrap">电话</th>
+            <th class="nowrap">qq</th>
+            <th class="nowrap">状态</th>
+            <th class="nowrap">审核状态</th>
+            <th class="text-left">时间</th>
+            <th class='text-center'></th>
+        </tr>
+        </thead>
+        <tbody>
+        {foreach $list as $key=>$vo}
+        <tr>
+            <td class='list-table-sort-td text-top'>
+                {$vo.id}
+            </td>
+            <td class="text-left nowrap text-top">
+                {$vo.username}
+            </td>
+            <td class="text-left nowrap text-top">
+                {$vo.phone}
+            </td>
+            <td class="text-left nowrap text-top">
+                {$vo.qq}
+            </td>
+
+            <td class='text-left nowrap text-top'>
+                {eq name="vo.is_deleted" value="0"}启用{else /}禁用{/eq}
+            </td>
+            <td class="text-left nowrap text-top">
+                {switch vo.examine}
+                {case 1} <span style="color: deepskyblue">未处理</span>{/case}
+                {case 2} <span style="color: green">审核通过</span>{/case}
+                {case 3} <span style="color: red" data-tips-text="{$vo.desc}">审核不通过</span>{/case}
+                {/switch}
+            </td>
+            <td class='text-left nowrap text-top'>
+                {$vo.create_at|default="<span class='color-desc'>从未登录</span>"|raw}
+            </td>
+            <td class='text-center nowrap text-top'>
+
+                <!--{if auth("$classuri/examine")}-->
+                <span class="text-explode">|</span>
+                <a data-modal='{:url("$classuri/examine")}?id={$vo.id}'>审核</a>
+                <!--{/if}-->
+
+            </td>
+        </tr>
+        {/foreach}
+        </tbody>
+    </table>
+    {if isset($page)}<p>{$page|raw}</p>{/if}
+    <!--{/if}-->
+</form>
+<script>
+    (function () {
+        window.form.render();
+        window.laydate.render({range: true, elem: '#create_at'});
+    })();
+</script>
+{/block}

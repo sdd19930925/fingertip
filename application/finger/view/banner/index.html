@@ -1,0 +1,131 @@
+{extend name='admin@public/content'}
+
+{block name="button"}
+
+<!--{if auth("$classuri/add")}-->
+<button class='layui-btn layui-btn-sm layui-btn-primary' data-modal='{:url("$classuri/add")}' data-title="添加商品">添加轮播
+</button>
+<!--{/if}-->
+
+<!--{if auth("$classuri/del")}-->
+<button data-update data-field='delete' data-action='{:url("$classuri/del")}'
+        class='layui-btn layui-btn-sm layui-btn-primary'>批量删除
+</button>
+<!--{/if}-->
+
+{/block}
+
+{block name="content"}
+
+<!-- 表单搜索 开始 -->
+<form autocomplete="off" class="layui-form layui-form-pane form-search" action="{:request()->url()}"
+      onsubmit="return false" method="get">
+
+    <div class="layui-form-item layui-inline">
+        <label class="layui-form-label">轮播标题</label>
+        <div class="layui-input-inline">
+            <input name="bname" value="{$Think.get.bname}" placeholder="请输入轮播标题" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item layui-inline">
+        <label class="layui-form-label">链接</label>
+        <div class="layui-input-inline">
+            <input name="burl" value="{$Think.get.burl}" placeholder="请输入链接" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item layui-inline">
+        <label class="layui-form-label">发布时间</label>
+        <div class="layui-input-inline">
+            <input name="create_at" id="create_at" value="{$Think.get.create_at}" placeholder="请选择发布时间"
+                   class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item layui-inline">
+        <button class="layui-btn layui-btn-primary"><i class="layui-icon">&#xe615;</i> 搜 索</button>
+    </div>
+
+</form>
+<!-- 表单搜索 结束 -->
+
+<form onsubmit="return false;" data-auto="true" method="post">
+    <!--{if empty($list)}-->
+    <p class="help-block text-center well">没 有 记 录 哦！</p>
+    <!--{else}-->
+    <input type="hidden" value="resort" name="action">
+    <table class="layui-table notevent" lay-skin="line">
+        <thead>
+        <tr>
+            <th class='list-table-check-td think-checkbox'>
+                <input data-auto-none="none" data-check-target='.list-check-box' type='checkbox'>
+            </th>
+            <th class='list-table-sort-td'>
+                <button type="submit" class="layui-btn layui-btn-normal layui-btn-xs">排 序</button>
+            </th>
+            <th class="nowrap">轮播标题</th>
+            <th class="padding-none">
+                图片
+            </th>
+            <th class="padding-none">
+                链接
+            </th>
+            <th class="padding-none">
+                状态
+            </th>
+            <th class="text-left">添加时间</th>
+            <th class='text-center'></th>
+        </tr>
+        </thead>
+        <tbody>
+        {foreach $list as $key=>$vo}
+        <tr>
+            <td class='list-table-check-td text-top think-checkbox'>
+                <input class="list-check-box" value='{$vo.id}' type='checkbox'>
+            </td>
+            <td class='list-table-sort-td text-top'>
+                <input name="_{$vo.id}" value="{$vo.sort}" class="list-sort-input">
+            </td>
+            <td class="text-left nowrap text-top">
+                {$vo.bname}
+            </td>
+            <td class="text-left nowrap text-top" style="padding:2px">
+                <img src="{$vo.bpath}" alt="" style="border-radius: 8px;">
+            </td>
+            <td class='text-left nowrap text-top'>
+                {$vo.burl}
+
+            </td>
+            <td class='text-left nowrap text-top'>
+                {eq name="vo.is_deleted" value="0"}启用{else /}禁用{/eq}
+            </td>
+            <td class='text-left nowrap text-top'>
+                {$vo.btime|format_datetime|default="<span class='color-desc'>从未登录</span>"|raw}
+            </td>
+            <td class='text-center nowrap text-top'>
+
+                <!--{if auth("$classuri/edit")}-->
+                <span class="text-explode">|</span>
+                <a data-modal='{:url("$classuri/edit")}?id={$vo.id}'>编辑</a>
+                <!--{/if}-->
+
+                <!--{if auth("$classuri/del")}-->
+                <span class="text-explode">|</span>
+                <a data-update="{$vo.id}" data-field='delete' data-action='{:url("$classuri/del")}'>删除</a>
+                <!--{/if}-->
+
+            </td>
+        </tr>
+        {/foreach}
+        </tbody>
+    </table>
+    {if isset($page)}<p>{$page|raw}</p>{/if}
+    <!--{/if}-->
+</form>
+<script>
+    (function () {
+        window.form.render();
+        window.laydate.render({range: true, elem: '#create_at'});
+    })();
+</script>
+{/block}

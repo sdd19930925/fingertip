@@ -1,0 +1,171 @@
+{extend name='admin@public/content'}
+
+{block name="button"}
+
+
+<!--{if auth("$classuri/del")}-->
+<button class='layui-btn layui-btn-sm layui-btn-primary' data-action='{:url("$classuri/del")}' data-field='delete'
+        data-update>批量删除
+</button>
+<!--{/if}-->
+
+{/block}
+
+{block name="content"}
+
+<!-- 表单搜索 开始 -->
+<form autocomplete="off" class="layui-form layui-form-pane form-search" action="{:request()->url()}"
+      onsubmit="return false" method="get">
+
+    <div class="layui-form-item layui-inline">
+        <label class="layui-form-label">店铺名</label>
+        <div class="layui-input-inline">
+            <input name="store_name" value="{$Think.get.store_name}" placeholder="请输入店铺名" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item layui-inline">
+        <label class="layui-form-label">旺旺</label>
+        <div class="layui-input-inline">
+            <input name="store_num" value="{$Think.get.store_num}" placeholder="请输入旺旺" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item layui-inline">
+        <label class="layui-form-label">订单id</label>
+        <div class="layui-input-inline">
+            <input name="tl_id" value="{$Think.get.tl_id}" placeholder="请输入订单id" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item layui-inline">
+        <label class="layui-form-label">任务id</label>
+        <div class="layui-input-inline">
+            <input name="t_id" value="{$Think.get.t_id}" placeholder="请输入任务id" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item layui-inline">
+        <label class="layui-form-label">京东/淘宝编号</label>
+        <div class="layui-input-inline">
+            <input name="order_id" value="{$Think.get.order_id}" placeholder="请输入京东/淘宝编号" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item layui-inline">
+        <label class="layui-form-label">用户id</label>
+        <div class="layui-input-inline">
+            <input name="order_id" value="{$Think.get.order_id}" placeholder="请输入用户id" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item layui-inline">
+        <label class="layui-form-label">订单类型</label>
+        <div class="layui-input-inline">
+            <select name="task_cate" lay-search>
+                <option value="">订单类型</option>
+                {foreach $task_cate as $k=>$v}
+                <!--{if $Think.get.task_cate eq $v['id']}-->
+                <option selected="selected" value="{$v.id}">{$v.cate_title}</option>
+                <!--{else}-->
+                <option value="{$v.id}">{$v.cate_title}</option>
+                <!--{/if}-->
+                {/foreach}
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item layui-inline">
+        <label class="layui-form-label">订单状态</label>
+        <div class="layui-input-inline">
+            <select name="status" lay-search>
+                <option value="">订单状态</option>
+                {foreach [1=>"未接单",2=>"待操作",3=>"待返款发货",4=>"待评价",5=>"待确认",6=>"已完成",7=>"冻结",8=>"已撤销"] as $k=>$v}
+                <!--{if $Think.get.status eq $v}-->
+                <option selected="selected" value="{$k}">{$v}</option>
+                <!--{else}-->
+                <option value="{$k}">{$v}</option>
+                <!--{/if}-->
+                {/foreach}
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item layui-inline">
+        <label class="layui-form-label">发布时间</label>
+        <div class="layui-input-inline">
+            <input name="create_at" id="create_at" value="{$Think.get.create_at}" placeholder="请选择发布时间"
+                   class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item layui-inline">
+        <button class="layui-btn layui-btn-primary"><i class="layui-icon">&#xe615;</i> 搜 索</button>
+    </div>
+
+</form>
+<!-- 表单搜索 结束 -->
+
+<form onsubmit="return false;" data-auto="true" method="post">
+    <!--{if empty($list)}-->
+    <p class="help-block text-center well">没 有 记 录 哦！</p>
+    <!--{else}-->
+    <input type="hidden" value="resort" name="action">
+    <table class="layui-table notevent" lay-skin="line">
+        <thead>
+        <tr>
+            <th class='list-table-sort-td'>
+                <button type="submit" class="layui-btn layui-btn-normal layui-btn-xs">排 序</button>
+            </th>
+            <th class="nowrap">订单号</th>
+            <th class="nowrap">垫付金额</th>
+            <th class="nowrap">接单时间</th>
+            <th class="nowrap">接单人</th>
+            <th class="nowrap">任务</th>
+            <th class="nowrap">商户</th>
+            <th class="text-left">时间</th>
+            <th class='text-center'></th>
+        </tr>
+        </thead>
+        <tbody>
+        {foreach $list as $key=>$vo}
+        <tr>
+
+            <td class='list-table-sort-td text-top'>
+                {$vo.id|default=''}
+            </td>
+            <td class="text-left nowrap text-top">
+                {$vo.order_id|default=''}
+            </td>
+            <td class="text-left nowrap text-top">
+                {$vo.price|default=''}
+            </td>
+            <td class="text-left nowrap text-top">
+                {$vo.taking_time|date='Y-m-d H:i:s'}
+            </td>
+            <td class="text-left nowrap text-top">
+                {$vo.nickname|default=''}
+            </td>
+            <td class="text-left nowrap text-top">
+                {$vo.t_id|default=''}
+            </td>
+            <td class="text-left nowrap text-top">
+                {$vo.username|default=''}
+            </td>
+            <td class='text-left nowrap text-top'>
+                {$vo.create_at|default="<span class='color-desc'>从未登录</span>"|raw}
+            </td>
+            <td class='text-center nowrap text-top'>
+                <!--{if auth("$classuri/del")}-->
+                <span class="text-explode">|</span>
+                <a data-update="{$vo.id}" data-field='delete' data-action='{:url("$classuri/del")}'>删除</a>
+                <!--{/if}-->
+
+            </td>
+        </tr>
+        {/foreach}
+        </tbody>
+    </table>
+    {if isset($page)}<p>{$page|raw}</p>{/if}
+    <!--{/if}-->
+</form>
+<script>
+    (function () {
+        window.form.render();
+        window.laydate.render({range: true, elem: '#create_at'});
+    })();
+</script>
+{/block}

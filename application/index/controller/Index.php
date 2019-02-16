@@ -25,6 +25,6 @@ class Index extends Controller
 
     public function index()
     {
-        return 123456;
+        $this->redirect('@admin/login');
     }
 }

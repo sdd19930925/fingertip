@@ -1,0 +1,205 @@
+{extend name='admin@public/content'}
+
+{block name="button"}
+
+<!--{if auth("$classuri/add")}-->
+<button class='layui-btn layui-btn-sm layui-btn-primary' data-open='{:url("$classuri/add")}' data-title="发布任务">发布任务
+</button>
+<!--{/if}-->
+<!--{if auth("$classuri/del")}-->
+<button data-update data-field='delete' data-action='{:url("$classuri/del")}'
+        class='layui-btn layui-btn-sm layui-btn-primary'>批量删除
+</button>
+<!--{/if}-->
+{/block}
+
+{block name="content"}
+
+<!-- 表单搜索 开始 -->
+<form autocomplete="off" class="layui-form layui-form-pane form-search" action="{:request()->url()}"
+      onsubmit="return false" method="get">
+    <div class="layui-form-item layui-inline">
+        <label class="layui-form-label">购物平台</label>
+        <div class="layui-input-inline">
+            <select name="platform" lay-search>
+                <option value="">购物平台</option>
+                {foreach $platform as $k=>$v}
+                <!--{if $Think.get.platform eq $v.id}-->
+                <option selected="selected" value="{$v.id}">{$v.cate_title}</option>
+                <!--{else}-->
+                <option value="{$v.id}">{$v.cate_title}</option>
+                <!--{/if}-->
+                {/foreach}
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item layui-inline">
+        <label class="layui-form-label">任务分类</label>
+        <div class="layui-input-inline">
+            <select name="task_cate" lay-search>
+                <option value="">任务分类</option>
+                {foreach $cate as $k=>$v}
+                <!--{if $Think.get.task_cate eq $v.id}-->
+                <option selected="selected" value="{$v.id}">{$v.cate_title}</option>
+                <!--{else}-->
+                <option value="{$v.id}">{$v.cate_title}</option>
+                <!--{/if}-->
+                {/foreach}
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item layui-inline">
+        <label class="layui-form-label">店铺</label>
+        <div class="layui-input-inline">
+            <select name="store_id" lay-search>
+                <option value="">店铺</option>
+                {foreach $store as $k=>$v}
+                <!--{if $Think.get.store_id eq $v.id}-->
+                <option selected="selected" value="{$v.id}">{$v.store_name}</option>
+                <!--{else}-->
+                <option value="{$v.id}">{$v.store_name}</option>
+                <!--{/if}-->
+                {/foreach}
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item layui-inline">
+        <label class="layui-form-label">状态</label>
+        <div class="layui-input-inline">
+            <select name="status" lay-search>
+                <option value="">状态</option>
+                {foreach [1=>"未付款",2=>"已付款",3=>"审核不通过",4=>"执行中",5=>"完成",6=>"冻结",7=>"撤销",8=>"全部"] as $k=>$v}
+                <!--{if $Think.get.status eq $k}-->
+                <option selected="selected" value="{$k}">{$v}</option>
+                <!--{else}-->
+                <option value="{$k}">{$v}</option>
+                <!--{/if}-->
+                {/foreach}
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item layui-inline">
+        <label class="layui-form-label">商品名称</label>
+        <div class="layui-input-inline">
+            <input name="goods_name" value="{$Think.get.goods_name}" placeholder="请输入商品名称" class="layui-input">
+        </div>
+    </div>
+
+
+    <div class="layui-form-item layui-inline">
+        <label class="layui-form-label">发布时间</label>
+        <div class="layui-input-inline">
+            <input name="create_at" id="create_at" value="{$Think.get.create_at}" placeholder="请选择发布时间"
+                   class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item layui-inline">
+        <button class="layui-btn layui-btn-primary"><i class="layui-icon">&#xe615;</i> 搜 索</button>
+    </div>
+
+</form>
+<!-- 表单搜索 结束 -->
+
+<form onsubmit="return false;" data-auto="true" method="post">
+    <!--{if empty($list)}-->
+    <p class="help-block text-center well">没 有 记 录 哦！</p>
+    <!--{else}-->
+    <input type="hidden" value="resort" name="action">
+    <table class="layui-table notevent" lay-skin="line">
+        <thead>
+        <tr>
+            <th class='list-table-sort-td'>
+                排序
+            </th>
+            <th class="nowrap">商品名称</th>
+            <th class="nowrap">商品链接</th>
+            <th class="nowrap">商品主图</th>
+            <th class="nowrap">购买价格</th>
+            <th class="nowrap">展示价格</th>
+            <th class="nowrap">购买数量</th>
+            <th class="nowrap">搜索关键词</th>
+            <th class="nowrap">放单数量</th>
+            <th class="nowrap">获得奖励</th>
+            <th class="nowrap">状态</th>
+            <th class="text-left">时间</th>
+            <th class='text-center'></th>
+        </tr>
+        </thead>
+        <tbody>
+        {foreach $list as $key=>$vo}
+        <tr>
+            <td class='list-table-sort-td text-top'>
+                {$vo.id}
+            </td>
+            <td class="text-left nowrap text-top">
+                {$vo.goods_name}
+            </td>
+            <td class="text-left nowrap text-top">
+                <a href="{$vo.goods_url}" target="_blank">商品链接</a>
+            </td>
+            <td class="text-left nowrap text-top">
+                <img src="{$vo.goods_pic}" alt="" data-tips-image>
+            </td>
+            <td class="text-left nowrap text-top">
+                {$vo.goods_price}
+            </td>
+            <td class="text-left nowrap text-top">
+                {$vo.mobile_price}
+            </td>
+            <td class="text-left nowrap text-top">
+                {$vo.goods_num}
+            </td>
+            <td class="text-left nowrap text-top">
+                {$vo.goods_key}
+            </td>
+            <td class="text-left nowrap text-top">
+                {$vo.amount}
+            </td>
+            <td class="text-left nowrap text-top">
+                {$vo.price}
+            </td>
+            <td class='text-left nowrap text-top'>
+                <span style="font-weight: bold" {in name="vo.status" value="3,5,6" } data-tips-text='{$vo.desc}' {/in}>
+                {switch vo.status}
+                {case 1}未付款{/case}
+                {case 2}已付款{/case}
+                {case 3}审核不通过{/case}
+                {case 4}执行中{/case}
+                {case 5}完成{/case}
+                {case 6}冻结{/case}
+                {case 7}撤销{/case}
+                {case 8}全部{/case}
+                {/switch}
+                </span>
+
+            </td>
+            <td class='text-left nowrap text-top'>
+                {$vo.tim|default="<span class='color-desc'>从未登录</span>"|raw}
+            </td>
+            <td class='text-center nowrap text-top'>
+
+                <!--{if auth("$classuri/edit")}-->
+                <span class="text-explode">|</span>
+                <a data-modal='{:url("$classuri/edit")}?id={$vo.id}'>编辑</a>
+                <!--{/if}-->
+                <!--{if auth("$classuri/del")}-->
+                <span class="text-explode">|</span>
+                <a data-update="{$vo.id}" data-field='delete' data-action='{:url("$classuri/del")}'>删除</a>
+                <!--{/if}-->
+
+            </td>
+        </tr>
+        {/foreach}
+        </tbody>
+    </table>
+    {if isset($page)}<p>{$page|raw}</p>{/if}
+    <!--{/if}-->
+</form>
+<script>
+    (function () {
+        window.form.render();
+        window.laydate.render({range: true, elem: '#create_at'});
+    })();
+</script>
+{/block}

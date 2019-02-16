@@ -74,6 +74,7 @@ class Login extends BasicAdmin
         $user = Db::name('SystemUser')->where(['username' => $data['username'], 'is_deleted' => '0'])->find();
         empty($user) && $this->error('登录账号不存在，请重新输入!');
         empty($user['status']) && $this->error('账号已经被禁用，请联系管理员!');
+        ($user['level'] == 3 && in_array($user['examine'], [1, 3])) && $this->error('账号未审核或审核不同过，请联系管理员!');
         $user['password'] !== md5($data['password']) && $this->error('登录密码错误，请重新输入!');
         // 更新登录信息
         Db::name('SystemUser')->where(['id' => $user['id']])->update([
@@ -95,6 +96,42 @@ class Login extends BasicAdmin
         !empty($_SESSION) && $_SESSION = [];
         [session_unset(), session_destroy()];
         $this->success('退出登录成功！', '@admin/login');
+    }
+
+    public function register()
+    {
+        if ($this->request->isGet()) {
+            return $this->fetch('', ['title' => '用户注册']);
+        }
+        // 输入数据效验
+        $validate = Validate::make([
+            'username' => 'require|min:4',
+            'password' => 'require|min:4',
+        ], [
+            'username.require' => '登录账号不能为空！',
+            'username.min' => '登录账号长度不能少于4位有效字符！',
+            'password.require' => '登录密码不能为空！',
+            'password.min' => '登录密码长度不能少于4位有效字符！',
+        ]);
+        $data = [
+            'username' => $this->request->post('username', ''),
+            'password' => $this->request->post('password', ''),
+        ];
+        $validate->check($data) || $this->error($validate->getError());
+        // 用户信息验证
+        $user = Db::name('SystemUser')->where(['username' => $data['username'], 'is_deleted' => '0'])->find();
+        empty($user) && $this->error('登录账号不存在，请重新输入!');
+        empty($user['status']) && $this->error('账号已经被禁用，请联系管理员!');
+        $user['password'] !== md5($data['password']) && $this->error('登录密码错误，请重新输入!');
+        // 更新登录信息
+        Db::name('SystemUser')->where(['id' => $user['id']])->update([
+            'login_at' => Db::raw('now()'),
+            'login_num' => Db::raw('login_num+1'),
+        ]);
+        session('user', $user);
+        !empty($user['authorize']) && NodeService::applyAuthNode();
+        LogService::write('系统管理', '用户登录系统成功');
+        $this->success('登录成功，正在进入系统...', '@admin');
     }
 
 }

@@ -1,0 +1,37 @@
+<form action="{:request()->url()}" autocomplete="off" class="layui-form layui-box modal-form-box" data-auto="true"
+      method="post">
+
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">购物平台</label>
+        <div class="layui-input-block">
+            <input autofocus class="layui-input" name="cate_title" placeholder="请输入购物平台" required
+                   title="请输入购物平台" value='{$vo.cate_title|default=""}'>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">平台图标</label>
+        <div class='layui-input-block'>
+            <img alt="" data-tips-image src="{$vo.cate_img|default=''}"
+                 style="height:auto;max-height:32px;min-width:32px"/>
+            <input class="layui-input" name="cate_img" onchange="$(this).prev('img').attr('src', this.value)"
+                   type="hidden" value="{$vo.cate_img|default=''}">
+            <a class="btn btn-link" data-field="cate_img" data-file="one" data-type="ico,png,jpg" data-uptype="local">上传图片</a>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">平台描述</label>
+        <div class="layui-input-block">
+            <textarea class="layui-textarea" name="cate_desc" placeholder="请输入平台描述" title="请输入平台描述">{$vo.cate_desc|default=""}</textarea>
+        </div>
+    </div>
+
+    <div class="hr-line-dashed"></div>
+
+    <div class="layui-form-item text-center">
+        {if isset($vo['id'])}<input name='id' type='hidden' value='{$vo.id}'/>{/if}
+        <button class="layui-btn" type='submit'>保存数据</button>
+        <button class="layui-btn layui-btn-danger" data-close data-confirm="确定要取消编辑吗？" type='button'>取消编辑</button>
+    </div>
+</form>
